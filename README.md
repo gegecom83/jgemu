@@ -21,11 +21,11 @@ games      = C:\Games\Game Boy\
 executable = C:\Emulators\BGB\bgb.exe
 extensions = .zip, .gb
 
-# [NEC PC Engine CD]
-# games       = D:\NEC PC Engine CD\
-# executable  = C:\Emulators\RetroArch\retroarch.exe
-# extensions  = .cue
-# parameters  = -L cores\mednafen_pce_libretro.dll
-# working_dir = C:\Emulators\RetroArch\
+[NEC PC Engine CD]
+games       = D:\NEC PC Engine CD\
+executable  = C:\Emulators\RetroArch\retroarch.exe
+extensions  = .cue
+parameters  = -L cores\mednafen_pce_libretro.dll
+working_dir = C:\Emulators\RetroArch\
 ```
 
