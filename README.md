@@ -18,6 +18,12 @@ Its creation was inspired by [Yava](https://github.com/Beluki/Yava).
 
 ---
 
+## Screenshots
+
+![main](https://github.com/gegecom83/jgemu/blob/main/main.png)
+
+---
+
 ## Installation
 
 ### Requirements
