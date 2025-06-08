@@ -85,7 +85,7 @@ extensions = .zip, .gb
 games       = /mnt/storage/NEC_PC_Engine_CD
 executable  = /usr/bin/retroarch
 extensions  = .cue
-parameters  = -L /usr/lib/libretro/mednafen_pce_libretro.so
+parameters  = -L, /.config/retroarch/cores/mednafen_pce_libretro.so
 working_dir = /usr/bin
 ```
 
