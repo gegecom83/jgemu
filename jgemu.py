@@ -58,6 +58,13 @@ class jgemu(QMainWindow):
         self.games_list.setVerticalScrollBar(self.games_scrollbar)
         self.systems_list.setFocus()
 
+        # --- Move games_count_label under systems list, all the way left ---
+        self.games_count_label = QLabel("Games: 0", self)
+        self.games_count_label.setAlignment(Qt.AlignLeft)
+        # Place the label at the bottom left under the systems list (row 2, column 0)
+        layout.addWidget(self.games_count_label, 2, 0)
+        # -------------------------------------------------------------------
+
     def set_main_window_bindings(self):
         self.systems_list.itemSelectionChanged.connect(self.on_platform_selection)
         self.games_list.itemDoubleClicked.connect(self.on_game_selection)
@@ -137,6 +144,9 @@ class jgemu(QMainWindow):
                     self.games_list.addItem(relative_path)
         if self.games_list.count() > 0:
             self.games_list.setCurrentRow(0)
+        # --- Update the games count label ---
+        self.games_count_label.setText(f"Games: {self.games_list.count()}")
+        # -------------------------------------
 
     def on_platform_selection(self):
         self.games_list.clear()
@@ -209,7 +219,7 @@ class jgemu(QMainWindow):
             self,
             "About",
             "jgemu\n"
-            "Version: 1.0.2\n"
+            "Version: 1.0.4\n"
             "Contact: gegecom83@gmail.com"
         )
 
