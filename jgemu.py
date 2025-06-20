@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QListWidget, QScrollBar, QGridLayout, QWidget, QMessageBox
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtCore import Qt
 import configparser
 import os
@@ -7,12 +7,48 @@ import subprocess
 import sys
 import platform
 
+class PreviewWindow(QWidget):
+    """
+    A separate window to display game preview images.
+    """
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Preview")
+        self.setFixedSize(320, 240)
+        self.setWindowFlags(Qt.WindowStaysOnTopHint)
+        if platform.system() == "Windows":
+            icon_path = "icon.ico"
+        else:
+            icon_path = "icon.png" if os.path.isfile("icon.png") else ""
+        if icon_path:
+            self.setWindowIcon(QIcon(icon_path))
+        layout = QGridLayout(self)
+        self.preview_label = QLabel("No preview available", self)
+        self.preview_label.setAlignment(Qt.AlignCenter)
+        layout.addWidget(self.preview_label, 0, 0)
+        self.setLayout(layout)
+
+    def update_preview(self, preview_path):
+        if preview_path and os.path.isfile(preview_path):
+            pixmap = QPixmap(preview_path)
+            if not pixmap.isNull():
+                scaled_pixmap = pixmap.scaled(320, 240, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+                self.preview_label.setPixmap(scaled_pixmap)
+                self.preview_label.setText("")
+            else:
+                self.preview_label.setText("Invalid preview image")
+                self.preview_label.setPixmap(QPixmap())
+        else:
+            self.preview_label.setText("No preview available")
+            self.preview_label.setPixmap(QPixmap())
+
 class jgemu(QMainWindow):
     """
     The main window.
     """
     def __init__(self):
         super().__init__()
+        self.preview_window = None
         self.main_window_design()
         self.set_main_window_bindings()
         self.load_from_ini()
@@ -20,7 +56,6 @@ class jgemu(QMainWindow):
     def main_window_design(self):
         self.setGeometry(100, 100, 900, 600)
         self.setMinimumSize(300, 200)
-        # Use .ico on Windows, .png on Linux
         if platform.system() == "Windows":
             icon_path = "icon.ico"
         else:
@@ -58,15 +93,13 @@ class jgemu(QMainWindow):
         self.games_list.setVerticalScrollBar(self.games_scrollbar)
         self.systems_list.setFocus()
 
-        # --- Move games_count_label under systems list, all the way left ---
         self.games_count_label = QLabel("Games: 0", self)
         self.games_count_label.setAlignment(Qt.AlignLeft)
-        # Place the label at the bottom left under the systems list (row 2, column 0)
         layout.addWidget(self.games_count_label, 2, 0)
-        # -------------------------------------------------------------------
 
     def set_main_window_bindings(self):
         self.systems_list.itemSelectionChanged.connect(self.on_platform_selection)
+        self.games_list.itemSelectionChanged.connect(self.on_game_selection_preview)
         self.games_list.itemDoubleClicked.connect(self.on_game_selection)
         self.games_list.keyPressEvent = self.key_press_event
 
@@ -114,6 +147,7 @@ class jgemu(QMainWindow):
         self.executable = os.path.normpath(self.config.get(self.platform, "executable"))
         self.extensions = self.config.get(self.platform, "extensions")
         self.working_dir = os.path.normpath(self.config.get(self.platform, "working_dir")) if self.config.has_option(self.platform, "working_dir") else None
+        self.preview_dir = os.path.normpath(self.config.get(self.platform, "preview_dir")) if self.config.has_option(self.platform, "preview_dir") else None
 
     def check_options(self):
         if not self.config.has_option(self.platform, "games"):
@@ -133,6 +167,7 @@ class jgemu(QMainWindow):
             else:
                 self.extensions = [ext.strip() for ext in self.extensions.split(",")]
                 self.display_games()
+                self.update_preview(None)
 
     def display_games(self):
         self.games_list.clear()
@@ -144,9 +179,7 @@ class jgemu(QMainWindow):
                     self.games_list.addItem(relative_path)
         if self.games_list.count() > 0:
             self.games_list.setCurrentRow(0)
-        # --- Update the games count label ---
         self.games_count_label.setText(f"Games: {self.games_list.count()}")
-        # -------------------------------------
 
     def on_platform_selection(self):
         self.games_list.clear()
@@ -156,6 +189,26 @@ class jgemu(QMainWindow):
             self.parameters_separator = ","
             self.parameters_already_split = False
             self.check_options()
+
+    def on_game_selection_preview(self):
+        selected_items = self.games_list.selectedItems()
+        if selected_items:
+            self.game = selected_items[0].text()
+            self.update_preview(self.game)
+        else:
+            self.update_preview(None)
+
+    def update_preview(self, game):
+        if not game or not self.preview_dir:
+            if self.preview_window:
+                self.preview_window.hide()
+            return
+        game_base = os.path.splitext(os.path.basename(game))[0]
+        preview_path = os.path.normpath(os.path.join(self.preview_dir, f"{game_base}.png"))
+        if not self.preview_window:
+            self.preview_window = PreviewWindow()
+        self.preview_window.update_preview(preview_path)
+        self.preview_window.show()
 
     def on_game_selection(self, item):
         self.game = item.text()
@@ -208,9 +261,12 @@ class jgemu(QMainWindow):
         self.games_list.clear()
         self.systems_list.clear()
         self.systems_list.setFocus()
+        self.update_preview(None)
         self.load_from_ini()
 
     def quit_program(self):
+        if self.preview_window:
+            self.preview_window.close()
         self.close()
         QApplication.quit()
 
@@ -219,7 +275,7 @@ class jgemu(QMainWindow):
             self,
             "About",
             "jgemu\n"
-            "Version: 1.0.4\n"
+            "Version: 1.0.5\n"
             "Contact: gegecom83@gmail.com"
         )
 
