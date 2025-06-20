@@ -85,7 +85,7 @@ games       = /home/youruser/Games/GameBoy
 executable  = /usr/bin/gambatte
 extensions  = .zip, .gb
 working_dir = /usr/bin
-preview_dir = /home/youruser/thumbnails\gb\snaps
+preview_dir = /home/youruser/thumbnails/gb/snaps
 
 [NEC PC Engine CD]
 games       = /mnt/storage/NEC_PC_Engine_CD
@@ -93,7 +93,7 @@ executable  = /usr/bin/retroarch
 extensions  = .cue
 parameters  = -L, /.config/retroarch/cores/mednafen_pce_libretro.so
 working_dir = /usr/bin
-preview_dir = /home/youruser/thumbnails\pcenginecd\snaps
+preview_dir = /home/youruser/thumbnails/pcenginecd/snaps
 
 ```
 
