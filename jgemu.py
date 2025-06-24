@@ -8,14 +8,10 @@ import sys
 import platform
 
 class PreviewWindow(QWidget):
-    """
-    A separate window to display game preview images.
-    """
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):  # Add parent parameter
+        super().__init__(parent)  # Pass parent to super
         self.setWindowTitle("Preview")
         self.setFixedSize(320, 240)
-        self.setWindowFlags(Qt.WindowStaysOnTopHint)
         if platform.system() == "Windows":
             icon_path = "icon.ico"
         else:
@@ -43,9 +39,6 @@ class PreviewWindow(QWidget):
             self.preview_label.setPixmap(QPixmap())
 
 class jgemu(QMainWindow):
-    """
-    The main window.
-    """
     def __init__(self):
         super().__init__()
         self.preview_window = None
@@ -209,7 +202,13 @@ class jgemu(QMainWindow):
             self.preview_window = PreviewWindow()
         self.preview_window.update_preview(preview_path)
         self.preview_window.show()
-
+    
+    def closeEvent(self, event):
+        # Ensure PreviewWindow is closed when the main window closes
+        if self.preview_window:
+            self.preview_window.close()
+        event.accept()  # Accept the close event
+    
     def on_game_selection(self, item):
         self.game = item.text()
         self.full_path = os.path.normpath(os.path.join(self.games_folder, self.game))
@@ -275,7 +274,7 @@ class jgemu(QMainWindow):
             self,
             "About",
             "jgemu\n"
-            "Version: 1.0.5\n"
+            "Version: 1.0.6\n"
             "Contact: gegecom83@gmail.com"
         )
 
