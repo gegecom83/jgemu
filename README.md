@@ -65,7 +65,6 @@ games       = C:\Games\Game Boy\
 executable  = C:\Emulators\BGB\bgb.exe
 extensions  = .zip, .gb
 working_dir = 
-preview_dir = C:\thumbnails\gb\snaps
 
 [NEC PC Engine CD]
 games       = D:\NEC PC Engine CD\
@@ -73,7 +72,6 @@ executable  = C:\Emulators\RetroArch\retroarch.exe
 extensions  = .cue
 parameters  = -L cores\mednafen_pce_libretro.dll
 working_dir = C:\Emulators\RetroArch\
-preview_dir = C:\thumbnails\pcenginecd\snaps
 
 ```
 
@@ -84,16 +82,14 @@ preview_dir = C:\thumbnails\pcenginecd\snaps
 games       = /home/youruser/Games/GameBoy
 executable  = /usr/bin/gambatte
 extensions  = .zip, .gb
-working_dir = /usr/bin
-preview_dir = /home/youruser/thumbnails/gb/snaps
+working_dir = ~/.config/gambatte/
 
 [NEC PC Engine CD]
 games       = /mnt/storage/NEC_PC_Engine_CD
 executable  = /usr/bin/retroarch
 extensions  = .cue
 parameters  = -L, /.config/retroarch/cores/mednafen_pce_libretro.so
-working_dir = /usr/bin
-preview_dir = /home/youruser/thumbnails/pcenginecd/snaps
+working_dir = ~/.config/retroarch/
 
 ```
 
@@ -104,7 +100,6 @@ preview_dir = /home/youruser/thumbnails/pcenginecd/snaps
 - **extensions**: Comma-separated list of file extensions to show (including the dot, e.g. `.zip, .gb`).
 - **parameters** _(optional)_: Command-line parameters for the emulator, separated by commas.
 - **working_dir** _(optional)_: Working directory for the emulator. If omitted, uses the executable's directory.
-- **preview_dir** _(optional)_: Preview directory for game images.
  
 > **Tip:**  
 > On Windows, use `\` or `\\` for paths.  
